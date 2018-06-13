@@ -62,12 +62,11 @@ def delete_instance(requests):
 	
 	return render(requests, 'bot/data.html', context={'nooutput':nooutput},)
 	
-def ec2_op(requests, mode='web'):
+def ec2_op(requests, op, ecid, mode='web'):
 	from botocore.exceptions import ClientError
-	operation = requests.GET['op']
-	instance_id = requests.GET['ecid']
+	operation = op
+	instance_id = ecid
 	ec2 = boto3.client('ec2')
-	
 	if operation == 'start':
 		try:
 			ec2.start_instances(InstanceIds=[instance_id], DryRun=True)
@@ -106,12 +105,3 @@ def ec2_op(requests, mode='web'):
 				return render(requests, 'bot/data.html', context={'nooutput':e},)
 	# return this to all instances
 	return HttpResponse("Wrong Page!!! Please go to home page")
-	
-	
-	
-	
-	
-	
-	
-	
-	
