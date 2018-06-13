@@ -19,9 +19,9 @@
 	<tbody>
     {% for key2,value2 in value.items %}
 		{% if key2 == 'State' and value2 == 'running' %}
-			<tr><td>{{ key2 }}</td><td bgcolor="#32CD32"><strong>{{ value2 }}</strong></td><td><a class="btn btn-primary" role="button" href="../ec2_op/?op=stop&ecid={{key}}"> Stop </a></td></tr>
+			<tr><td>{{ key2 }}</td><td bgcolor="#32CD32"><strong>{{ value2 }}</strong></td><td><a class="btn btn-primary" role="button" href="../ec2_op/stop/{{key}}/"> Stop </a></td></tr>
 		{% elif key2 == 'State' and value2 != 'running' %}
-			<tr><td>{{ key2 }}</td><td bgcolor="orange"><strong>{{ value2 }}</strong></td><td><a class="btn btn-primary" role="button" href="../ec2_op/?op=start&ecid={{key}}"> Start </a></td></tr>
+			<tr><td>{{ key2 }}</td><td bgcolor="orange"><strong>{{ value2 }}</strong></td><td><a class="btn btn-primary" role="button" href="../ec2_op/start/{{key}}/"> Start </a></td></tr>
 		{% else %}
 			<tr><td>{{ key2 }}</td><td>{{ value2 }}</td></tr>
 		{% endif %}
