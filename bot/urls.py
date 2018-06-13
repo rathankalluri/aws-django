@@ -9,8 +9,6 @@ urlpatterns = [
 	path('instances/<filter>/<mode>', views.instances, name='instances'),
 	path('create_instance/', views.create_instance, name='create_instance'),
 	path('delete_instance/', views.delete_instance, name='delete_instance'),
-	path('ec2_op/<mode>', views.ec2_op, name='ec2_op'),
-	re_path(r'^ec2_op/$', views.ec2_op, name='ec2_op'),
-	re_path(r'^ec2_op/<mode>$', views.ec2_op, name='ec2_op'),
-
+	path('ec2_op/<op>/<ecid>/',views.ec2_op, name='ec2_op'),
+	path('ec2_op/<op>/<ecid>/<mode>/',views.ec2_op, name='ec2_op'),
 ]
