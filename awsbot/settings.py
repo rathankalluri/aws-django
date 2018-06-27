@@ -25,7 +25,7 @@ SECRET_KEY = 'e6manu!d9*^pjfp(!dhlqr42mbjj07)4hh5+qa65nci5%pk22('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aws-bot.herokuapp.com',]
 
 
 # Application definition
