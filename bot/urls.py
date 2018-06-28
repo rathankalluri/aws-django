@@ -11,4 +11,5 @@ urlpatterns = [
 	path('delete_instance/', views.delete_instance, name='delete_instance'),
 	path('ec2_op/<op>/<ecid>/',views.ec2_op, name='ec2_op'),
 	path('ec2_op/<op>/<ecid>/<mode>/',views.ec2_op, name='ec2_op'),
+	path('chat/', views.chat, name='chat'),
 ]
