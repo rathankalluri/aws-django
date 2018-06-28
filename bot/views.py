@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 import boto3
 import pdb; #Remove after debug pdb.set_trace()
 from collections import defaultdict
+import json
 
 # Create your views here.
 def index(requests):
