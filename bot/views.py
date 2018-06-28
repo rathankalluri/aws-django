@@ -111,6 +111,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def chat(request):
-	data = json.loads(request.body)
-	print (data['responseId'])
-	return JsonResponse(data)
+	if request.POST:
+		data = json.loads(request.body)
+		print (data['responseId'])
+		return JsonResponse(data)
+	return render(request, 'bot/data.html', context={'nooutput':"You landed on a wrong page please go back to Home page"},)
