@@ -105,3 +105,11 @@ def ec2_op(requests, op, ecid, mode='web'):
 				return render(requests, 'bot/data.html', context={'nooutput':e},)
 	# return this to all instances
 	return HttpResponse("Wrong Page!!! Please go to home page")
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def chat(request):
+	data = json.loads(request.body)
+	print (data['responseId'])
+	return JsonResponse(data)
