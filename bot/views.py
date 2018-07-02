@@ -110,9 +110,9 @@ def ec2_op(requests, op, ecid, mode='web'):
 
 #Chat Functions start here 
 
-def chat_json_builder(mode='', **instance):
+def chat_json_builder():
 	response = {
-  "fulfillmentText": "This is a text response",
+ 
   "fulfillmentMessages": [
     {
       "card": {
@@ -128,73 +128,39 @@ def chat_json_builder(mode='', **instance):
       }
     }
   ],
-  "source": "example.com",
+
   "payload": {
 		"slack": {
-		  "text": "This is a text response for Slack."
-		}
-  },
-  "outputContexts": [
-    {
-      "name": "projects/${PROJECT_ID}/agent/sessions/${SESSION_ID}/contexts/context name",
-      "lifespanCount": 5,
-      "parameters": {
-        "param": "param value"
+		  "richResponse": {
+        "items": [
+          {
+            "simpleResponse": {
+              "textToSpeech": "this is a simple response"
+            }
+          }
+        ]
       }
-    }
-  ],
-  "followupEventInput": {
-    "name": "event name",
-    "languageCode": "en-US",
-    "parameters": {
-      "param": "param value"
-    }
+		}
   }
 }
+	return response
 
-
-	return None
-
-# Combine check_status_all and check_status into one function
-def check_status_all(filter):
+def check_status(instance_id=False, filter='', instance_meta=''):
 	ec2 = boto3.resource('ec2')
 	
 	ec2info = defaultdict()
 	
 	if filter:
 		filters=[{'Name': 'instance-state-name', 'Values': [filter]}]
-		
-	instances = ec2.instances.filter(Filters=filters)
+	else:
+		filters=[]
 	
-	for instance in instances:
-		for tag in instance.tags:
-			if 'Name' in tag['Key']:
-				name = tag['Value']
-			else:
-				name = "No Instance Name Defined"
-		
-		ec2info[instance.id] = {
-		'instance_name':name,
-		'instance_type':instance.instance_type,
-		'instance_state':instance.state['Name'],
-		'instance_private_ip':instance.private_ip_address,
-		'instance_public_ip':instance.public_ip_address
-		}
-		print(ec2info)
-		pdb.set_trace()
-		#json_data = chat_json_builder(ec2info)
-	#return JsonResponse(json_data)	
-	return JsonResponse({'message':'Still working on it'})
-		
-def check_status(instance_id, filter='', instance_meta=''):
-	ec2 = boto3.resource('ec2')
+	if not instance_id:
+		instances = ec2.instances.filter(Filters=filters)
+	else:
+		instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
 	
-	ec2info = defaultdict()
-		
-	if filter:
-		filters=[{'Name': 'instance-state-name', 'Values': [filter]}]
-	
-	instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
+	#instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
 	
 	for instance in instances:
 		for tag in instance.tags:
@@ -210,12 +176,9 @@ def check_status(instance_id, filter='', instance_meta=''):
 		'instance_private_ip':instance.private_ip_address,
 		'instance_public_ip':instance.public_ip_address
 		}
-		
-		print(ec2info)
-		pdb.set_trace()
-		#json_data = chat_json_builder(ec2info)
-	#return JsonResponse(json_data)		
-	return JsonResponse({'message':'Still working on it'})
+		json_data = chat_json_builder()
+	return JsonResponse(json_data)		
+	#return JsonResponse({'message':'Still working on it'})
 	
 from django.views.decorators.csrf import csrf_exempt
 
@@ -231,11 +194,11 @@ def chat(request):
 		meta = data['queryResult']['parameters']['meta']
 		
 		STATES = ['running','stopping','stopped','shutting-down','terminated']
-		META = []
+		META = ['details']
 		
 		if any:
 			instance_id = re.findall(r"(i-\w+)",any)
-			instnace_id = instance_id[0]
+			instance_id = instance_id[0]
 		else:
 			instance_id = False
 		
@@ -245,24 +208,24 @@ def chat(request):
 		
 		#Check individual instance and state it is in 
 		if instance_id and (instance_state in STATES) and (meta not in META):
-			print("No meta")
+			check_status(instance_id=instance_id, filter=instance_state)
 		
 		#Check invidiual instances details
 		if instance_id and (instance_state not in STATES) and (meta not in META):
-			check_status(instance_id)
+			check_status(instance_id=instance_id)
 		
 		#Checks all instancs that are on EC2
 		if not instance_id and (instance_state in STATES):
 			if instance_state == 'running':
-				json_resp = check_status_all('running')
+				json_resp = check_status(filter='running')
 			if instance_state == 'stopping':
-				json_resp = check_status_all('stopping')
+				json_resp = check_status(filter='stopping')
 			if instance_state == 'stopped':
-				json_resp = check_status_all('stopped')
+				json_resp = check_status(filter='stopped')
 			if instance_state == 'shutting-down': 
-				json_resp = check_status_all('shutting-down')
+				json_resp = check_status(filter='shutting-down')
 			if instance_state == 'terminated':
-				json_resp = check_status_all('terminated')
+				json_resp = check_status(filter='terminated')
 			
 		else:
 			return JsonResponse({'Error':'Use any of these keywords (running|stopping|stopped|shutting-down|terminated)'}) #Error Message
