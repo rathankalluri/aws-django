@@ -163,7 +163,7 @@ def check_status(instance_id=False, filter='', instance_meta=''):
 			msg = 'An exception occoured :'+e.response['Error']['Code']
 	else:
 		try:
-		instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
+			instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
 		except ClientError as e:
 			eflag = True
 			msg = 'An exception occoured :'+e.response['Error']['Code']
