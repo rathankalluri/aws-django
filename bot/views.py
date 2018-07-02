@@ -215,8 +215,8 @@ def chat(request):
 		
 		#Check individual instance and state it is in 
 		if instance_id and (instance_state in STATES) and (meta not in META):
-			json_resp = chat_json_builder()
-			#check_status(instance_id=instance_id, filter=instance_state)
+			#json_resp = chat_json_builder()
+			check_status(instance_id=instance_id, filter=instance_state)
 		
 		#Check invidiual instances details
 		if instance_id and (instance_state not in STATES) and (meta not in META):
