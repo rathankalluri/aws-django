@@ -147,7 +147,7 @@ def chat_json_builder():
                 {
                     "title": "Priority",
                     "value": "High",
-                    "short": false
+                    "short": "false"
                 }
             ],
             "image_url": "http://my-website.com/path/to/image.jpg",
