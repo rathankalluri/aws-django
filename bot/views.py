@@ -131,7 +131,7 @@ def chat_json_builder():
 
 "payload": {
 		"slack": {
-		"text": "This is a text response for Slack."
+		"text": "This is a text response for Slack.",
 		 "attachments": [
 			{
             "fallback": "Required plain-text summary of the attachment.",
