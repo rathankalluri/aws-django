@@ -156,10 +156,17 @@ def check_status(instance_id=False, filter='', instance_meta=''):
 		filters=[]
 	
 	if not instance_id:
-		instances = ec2.instances.filter(Filters=filters)
+		try:
+			instances = ec2.instances.filter(Filters=filters)
+		except ClientError as e:
+			eflag = True
+			msg = 'An exception occoured :'+e.response['Error']['Code']
 	else:
+		try:
 		instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
-	
+		except ClientError as e:
+			eflag = True
+			msg = 'An exception occoured :'+e.response['Error']['Code']
 	#instances = ec2.instances.filter(InstanceIds=[instance_id],Filters=filters)
 	
 	for instance in instances:
@@ -208,11 +215,12 @@ def chat(request):
 		
 		#Check individual instance and state it is in 
 		if instance_id and (instance_state in STATES) and (meta not in META):
-			check_status(instance_id=instance_id, filter=instance_state)
+			json_resp = chat_json_builder()
+			#check_status(instance_id=instance_id, filter=instance_state)
 		
 		#Check invidiual instances details
 		if instance_id and (instance_state not in STATES) and (meta not in META):
-			check_status(instance_id=instance_id)
+			json_resp = check_status(instance_id=instance_id)
 		
 		#Checks all instancs that are on EC2
 		if not instance_id and (instance_state in STATES):
@@ -232,3 +240,4 @@ def chat(request):
 
 		return JsonResponse(json_resp) #Response to bot
 	return render(request, 'bot/data.html', context={'nooutput':"You landed on a wrong page please go back to Home page"},)
+
