@@ -211,33 +211,28 @@ def chat(request):
 		
 		#Check individual instance, state and give required meta value
 		if instance_id and (instance_state in STATES) and (meta in META):
-			print("You have all the data")
+			return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "You have all the data"}}})
 		
 		#Check individual instance and state it is in 
 		if instance_id and (instance_state in STATES) and (meta not in META):
-			#json_resp = chat_json_builder()
-			check_status(instance_id=instance_id, filter=instance_state)
+			return JsonResponse(chat_json_builder())
+			#return JsonResponse(check_status(instance_id=instance_id, filter=instance_state))
 		
 		#Check invidiual instances details
 		if instance_id and (instance_state not in STATES) and (meta not in META):
-			json_resp = check_status(instance_id=instance_id)
-		
-		#Checks all instancs that are on EC2
+			return JsonResponse(check_status(instance_id=instance_id))
+			
 		if not instance_id and (instance_state in STATES):
 			if instance_state == 'running':
-				json_resp = check_status(filter='running')
+				return JsonResponse(check_status(filter='running'))
 			if instance_state == 'stopping':
-				json_resp = check_status(filter='stopping')
+				return JsonResponse(check_status(filter='stopping'))
 			if instance_state == 'stopped':
-				json_resp = check_status(filter='stopped')
+				return JsonResponse(check_status(filter='stopped'))
 			if instance_state == 'shutting-down': 
-				json_resp = check_status(filter='shutting-down')
+				return JsonResponse(check_status(filter='shutting-down'))
 			if instance_state == 'terminated':
-				json_resp = check_status(filter='terminated')
-			
+				return JsonResponse(check_status(filter='terminated'))
 		else:
-			return JsonResponse({'Error':'Use any of these keywords (running|stopping|stopped|shutting-down|terminated)'}) #Error Message
-
-		return JsonResponse(json_resp) #Response to bot
+			return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "Use any of these keywords (running|stopping|stopped|shutting-down|terminated)"}}}) #Error Message
 	return render(request, 'bot/data.html', context={'nooutput':"You landed on a wrong page please go back to Home page"},)
-
