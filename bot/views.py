@@ -124,11 +124,20 @@ def chat_json_builder(ec2info):
 	true = 'true'
 	
 	if instance_state == "running":
-		color_code = "good" 
+		color_code = "good"
+		button_state = "Stop Server"
+		button_url = "http://127.0.0.1:8000/bot/ec2_op/stop/"+instance_id
+		style = "danger"
 	elif instance_state == "stopping" or instance_state == "shutting-down":
 		color_code = "warning"
+		button_state = "Server Stopping"
+		button_url = "#"
+		style = ""
 	else:
 		color_code = "danger"
+		button_state = "Start Server"
+		button_url = "http://127.0.0.1:8000/bot/ec2_op/start/"+instance_id
+		style = "primary"
 	
 	response = {
   "fulfillmentText": "WebHook has responded with required details to Slack bot",
@@ -137,12 +146,12 @@ def chat_json_builder(ec2info):
 		"text": "Here are the details for "+instance_id,
 		 "attachments": [
 			{
-             "fallback": "The server is currently "+instance_state+"",
+            "fallback": "The server is currently "+instance_state+"",
             "text": "The server is currently "+instance_state+"",
             "fields": [
                 {
-                    "title": "State",
-                    "value": instance_state,
+                    "title": "Type",
+                    "value": instance_type,
                     "short": true
                 },
                 {
@@ -151,7 +160,16 @@ def chat_json_builder(ec2info):
                     "short": true
                 }
             ],
-            "color": color_code
+            "color": color_code,
+			
+			"actions": [
+				{
+				  "type": "button",
+				  "text": button_state,
+				  "url": button_url,
+				  "style":style
+				}
+			  ]
         }
 		 
 		 ]
@@ -162,8 +180,9 @@ def chat_json_builder(ec2info):
 
 def check_status(instance_id=False, filter='', instance_meta=''):
 	ec2 = boto3.resource('ec2')
-	
+	json_data = ''
 	ec2info = defaultdict()
+	eflag = False
 	
 	if filter:
 		filters=[{'Name': 'instance-state-name', 'Values': [filter]}]
@@ -198,7 +217,12 @@ def check_status(instance_id=False, filter='', instance_meta=''):
 		'instance_private_ip':instance.private_ip_address,
 		'instance_public_ip':instance.public_ip_address
 		}
-	json_data = chat_json_builder(ec2info)
+		
+	if eflag:
+		json_data = {"fulfillmentText": msg,"payload": {"slack": {"text": msg}}}
+	else:
+		json_data = chat_json_builder(ec2info)
+		
 	return json_data
 	#return JsonResponse({'message':'Still working on it'})
 	
