@@ -110,51 +110,48 @@ def ec2_op(requests, op, ecid, mode='web'):
 
 #Chat Functions start here 
 
-def chat_json_builder():
+def chat_json_builder(ec2info):
+	for id in ec2info:
+		instance_id = id
+	
+	vals = dict(ec2info.items())
+	instance_name = vals[instance_id]["instance_name"]
+	instance_state = vals[instance_id]["instance_state"]
+	instance_type = vals[instance_id]["instance_type"]
+	instance_private_ip = vals[instance_id]["instance_private_ip"]
+	instance_public_ip = vals[instance_id]["instance_public_ip"]
+	
+	true = 'true'
+	
+	if instance_state == "running":
+		color_code = "good" 
+	elif instance_state == "stopping" or instance_state == "shutting-down":
+		color_code = "warning"
+	else:
+		color_code = "danger"
+	
 	response = {
- 
-  "fulfillmentMessages": [
-    {
-      "card": {
-        "title": "card title",
-        "subtitle": "card text",
-        "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
-        "buttons": [
-          {
-            "text": "button text",
-            "postback": "https://assistant.google.com/"
-          }
-        ]
-      }
-    }
-  ],
-
-"payload": {
+  "fulfillmentText": "WebHook has responded with required details to Slack bot",
+  "payload": {
 		"slack": {
-		"text": "This is a text response for Slack.",
+		"text": "Here are the details for "+instance_id,
 		 "attachments": [
 			{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#2eb886",
-            "pretext": "Optional text that appears above the attachment block",
-            "author_name": "Bobby Tables",
-            "author_link": "http://flickr.com/bobby/",
-            "author_icon": "http://flickr.com/icons/bobby.jpg",
-            "title": "Slack API Documentation",
-            "title_link": "https://api.slack.com/",
-            "text": "Optional text that appears within the attachment",
+             "fallback": "The server is currently "+instance_state+"",
+            "text": "The server is currently "+instance_state+"",
             "fields": [
                 {
-                    "title": "Priority",
-                    "value": "High",
-                    "short": "false"
+                    "title": "State",
+                    "value": instance_state,
+                    "short": true
+                },
+                {
+                    "title": "Name",
+                    "value": instance_name,
+                    "short": true
                 }
             ],
-            "image_url": "http://my-website.com/path/to/image.jpg",
-            "thumb_url": "http://example.com/path/to/thumb.png",
-            "footer": "Slack API",
-            "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
-            "ts": 123456789
+            "color": color_code
         }
 		 
 		 ]
