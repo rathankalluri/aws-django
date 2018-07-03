@@ -198,7 +198,7 @@ def check_status(instance_id=False, filter='', instance_meta=''):
 		'instance_private_ip':instance.private_ip_address,
 		'instance_public_ip':instance.public_ip_address
 		}
-	json_data = chat_json_builder()
+	json_data = chat_json_builder(ec2info)
 	return json_data
 	#return JsonResponse({'message':'Still working on it'})
 	
