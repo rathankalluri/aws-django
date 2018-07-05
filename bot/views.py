@@ -110,7 +110,8 @@ def ec2_op(requests, op, ecid, mode='web'):
 
 #Chat Functions start here 
 
-def chat_json_builder(ec2info):
+def chat_json_builder_single(ec2info):
+
 	for id in ec2info:
 		instance_id = id
 	
@@ -177,6 +178,47 @@ def chat_json_builder(ec2info):
   }
 }
 	return response
+
+def chat_json_builder(ec2info, instance_value):
+	if not instance_value:
+		field_arr = []
+		count = 0
+		for item in ec2info.items():
+			count = count+1
+			instance_id = item[0]
+			instance_name = item[1]["instance_name"]
+			instance_state = item[1]["instance_state"]
+			instance_type = item[1]["instance_type"]
+			instance_private_ip = item[1]["instance_private_ip"]
+			instance_public_ip = item[1]["instance_public_ip"]
+			
+			true = 'true'
+			
+			field_arr.append({
+						"title": instance_id,
+						"value": "The instance is "+instance_type+" and is "+instance_state
+					})
+		
+		response = {
+	  "fulfillmentText": "WebHook has responded with required details to Slack bot",
+	  "payload": {
+			"slack": {
+			"text": "Here are the servers' details ",
+			 "attachments": [
+				{
+				"fallback": "Here are the servers' details ",
+				"text": "Here are the servers' details ",
+				"fields": field_arr,
+				"color": "#439FE0",
+			}
+			 
+			 ]
+			}
+	  }
+	}
+		return response
+	else:
+		return chat_json_builder_single(ec2info)
 
 def check_status(instance_id=False, filter='', instance_meta=''):
 	ec2 = boto3.resource('ec2')
@@ -254,8 +296,8 @@ def chat(request):
 		
 		#Check individual instance and state it is in 
 		if instance_id and (instance_state in STATES) and (meta not in META):
-			return JsonResponse(chat_json_builder())
-			#return JsonResponse(check_status(instance_id=instance_id, filter=instance_state))
+			#return JsonResponse(chat_json_builder())
+			return JsonResponse(check_status(instance_id=instance_id, filter=instance_state))
 		
 		#Check invidiual instances details
 		if instance_id and (instance_state not in STATES) and (meta not in META):
