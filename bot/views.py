@@ -285,9 +285,10 @@ def chat(request):
 		
 		if any:
 			instance_id = re.findall(r"(i-\w+)",any)
-			instance_id = instance_id[0]
-		else:
-			instance_id = False
+			if instance_id:
+				instance_id = instance_id[0]
+			else:
+				instance_id = False
 		
 		#Check individual instance, state and give required meta value
 		if instance_id and (instance_state in STATES) and (meta in META):
