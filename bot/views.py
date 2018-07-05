@@ -207,7 +207,6 @@ def chat_json_builder(ec2info, instance_value):
 			 "attachments": [
 				{
 				"fallback": "Here are the servers' details ",
-				"text": "Here are the servers' details ",
 				"fields": field_arr,
 				"color": "#439FE0",
 			}
