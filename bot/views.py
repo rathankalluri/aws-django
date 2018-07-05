@@ -305,15 +305,15 @@ def chat(request):
 			
 		if not instance_id and (instance_state in STATES):
 			if instance_state == 'running':
-				return JsonResponse(check_status(filter='running'))
+				return JsonResponse(check_status(instance_id,filter='running'))
 			if instance_state == 'stopping':
-				return JsonResponse(check_status(filter='stopping'))
+				return JsonResponse(check_status(instance_id,filter='stopping'))
 			if instance_state == 'stopped':
-				return JsonResponse(check_status(filter='stopped'))
+				return JsonResponse(check_status(instance_id,filter='stopped'))
 			if instance_state == 'shutting-down': 
-				return JsonResponse(check_status(filter='shutting-down'))
+				return JsonResponse(check_status(instance_id,filter='shutting-down'))
 			if instance_state == 'terminated':
-				return JsonResponse(check_status(filter='terminated'))
+				return JsonResponse(check_status(instance_id,filter='terminated'))
 		else:
 			return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "Use any of these keywords (running|stopping|stopped|shutting-down|terminated)"}}}) #Error Message
 	return render(request, 'bot/data.html', context={'nooutput':"You landed on a wrong page please go back to Home page"},)
