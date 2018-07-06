@@ -296,7 +296,8 @@ def chat(request):
 				instance_id = instance_id[0]
 			else:
 				instance_id = False
-
+		else:
+				instance_id = False
 		#Check individual instance, state and give required meta value
 		if instance_id and (instance_state in STATES) and (meta in META):
 			return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "You have all the data"}}})
