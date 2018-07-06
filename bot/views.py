@@ -280,6 +280,9 @@ def chat(request):
 		instance_state = data['queryResult']['parameters']['instance_state']
 		meta = data['queryResult']['parameters']['meta']
 		
+		source_info = data['originalDetectIntentRequest']
+		print(source_info)
+		
 		STATES = ['running','stopping','stopped','shutting-down','terminated']
 		META = ['details']
 		
