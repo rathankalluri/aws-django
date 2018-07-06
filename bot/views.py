@@ -280,43 +280,48 @@ def chat(request):
 		instance_state = data['queryResult']['parameters']['instance_state']
 		meta = data['queryResult']['parameters']['meta']
 		
-		source_info = data['originalDetectIntentRequest']
-		print(source_info)
+		#source_info = data['originalDetectIntentRequest']
+		user_id = data['originalDetectIntentRequest']['payload']['data']['event']['user']
+		
+		DATABASE = ['U0CQKNSJZ','U07AMDSR5']
 		
 		STATES = ['running','stopping','stopped','shutting-down','terminated']
 		META = ['details']
 		
-		if any:
-			instance_id = re.findall(r"(i-\w+)",any)
-			if instance_id:
-				instance_id = instance_id[0]
-			else:
-				instance_id = False
-		
-		#Check individual instance, state and give required meta value
-		if instance_id and (instance_state in STATES) and (meta in META):
-			return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "You have all the data"}}})
-		
-		#Check individual instance and state it is in 
-		if instance_id and (instance_state in STATES) and (meta not in META):
-			#return JsonResponse(chat_json_builder())
-			return JsonResponse(check_status(instance_id=instance_id, filter=instance_state))
-		
-		#Check invidiual instances details
-		if instance_id and (instance_state not in STATES) and (meta not in META):
-			return JsonResponse(check_status(instance_id=instance_id))
+		if user_id in DATABASE: #Replace this if with a proper auth mechanism
+			if any:
+				instance_id = re.findall(r"(i-\w+)",any)
+				if instance_id:
+					instance_id = instance_id[0]
+				else:
+					instance_id = False
 			
-		if not instance_id and (instance_state in STATES):
-			if instance_state == 'running':
-				return JsonResponse(check_status(filter='running'))
-			if instance_state == 'stopping':
-				return JsonResponse(check_status(filter='stopping'))
-			if instance_state == 'stopped':
-				return JsonResponse(check_status(filter='stopped'))
-			if instance_state == 'shutting-down': 
-				return JsonResponse(check_status(filter='shutting-down'))
-			if instance_state == 'terminated':
-				return JsonResponse(check_status(filter='terminated'))
+			#Check individual instance, state and give required meta value
+			if instance_id and (instance_state in STATES) and (meta in META):
+				return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "You have all the data"}}})
+			
+			#Check individual instance and state it is in 
+			if instance_id and (instance_state in STATES) and (meta not in META):
+				#return JsonResponse(chat_json_builder())
+				return JsonResponse(check_status(instance_id=instance_id, filter=instance_state))
+			
+			#Check invidiual instances details
+			if instance_id and (instance_state not in STATES) and (meta not in META):
+				return JsonResponse(check_status(instance_id=instance_id))
+				
+			if not instance_id and (instance_state in STATES):
+				if instance_state == 'running':
+					return JsonResponse(check_status(filter='running'))
+				if instance_state == 'stopping':
+					return JsonResponse(check_status(filter='stopping'))
+				if instance_state == 'stopped':
+					return JsonResponse(check_status(filter='stopped'))
+				if instance_state == 'shutting-down': 
+					return JsonResponse(check_status(filter='shutting-down'))
+				if instance_state == 'terminated':
+					return JsonResponse(check_status(filter='terminated'))
+			else:
+				return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "Use any of these keywords (running|stopping|stopped|shutting-down|terminated)"}}}) #Error Message
 		else:
-			return JsonResponse({"fulfillmentText": "This is a text response","payload":{"slack": {"text": "Use any of these keywords (running|stopping|stopped|shutting-down|terminated)"}}}) #Error Message
+			return JsonResponse({"fulfillmentText": "You are not authorized to work with AWS","payload":{"slack": {"text": "You are not authorized to work with AWS"}}}) #User not Authorized
 	return render(request, 'bot/data.html', context={'nooutput':"You landed on a wrong page please go back to Home page"},)
