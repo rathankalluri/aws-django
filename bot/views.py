@@ -280,7 +280,8 @@ def chat(request):
 		instance_state = data['queryResult']['parameters']['instance_state']
 		meta = data['queryResult']['parameters']['meta']
 		
-		#source_info = data['originalDetectIntentRequest']
+		source_info = data['originalDetectIntentRequest']
+		print(source_info)
 		user_id = data['originalDetectIntentRequest']['payload']['data']['event']['user']
 		
 		DATABASE = ['U0CQKNSJZ','U07AMDSR5']
