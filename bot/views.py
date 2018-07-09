@@ -259,6 +259,11 @@ def check_status(instance_id=False, filter='', instance_meta=''):
 		'instance_public_ip':instance.public_ip_address
 		}
 		
+	if not ec2info:
+		msg = "There are no "+ filter +" instances !!"
+		json_data = {"fulfillmentText": msg,"payload": {"slack": {"text": msg}}}
+		return json_data
+	
 	if eflag:
 		json_data = {"fulfillmentText": msg,"payload": {"slack": {"text": msg}}}
 	else:
