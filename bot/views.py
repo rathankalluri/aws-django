@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 import sys
 from django.http import HttpResponse, JsonResponse
 import boto3
@@ -127,7 +128,7 @@ def chat_json_builder_single(ec2info):
 	if instance_state == "running":
 		color_code = "good"
 		button_state = "Stop Server"
-		button_url = "http://127.0.0.1:8000/bot/ec2_op/stop/"+instance_id
+		button_url = settings.SITE_URL+"bot/ec2_op/stop/"+instance_id
 		style = "danger"
 	elif instance_state == "stopping" or instance_state == "shutting-down":
 		color_code = "warning"
@@ -137,7 +138,7 @@ def chat_json_builder_single(ec2info):
 	else:
 		color_code = "danger"
 		button_state = "Start Server"
-		button_url = "http://127.0.0.1:8000/bot/ec2_op/start/"+instance_id
+		button_url = settings.SITE_URL+"bot/ec2_op/start/"+instance_id
 		style = "primary"
 	
 	response = {
